@@ -1,11 +1,9 @@
 package main
 
 import (
-	// "fmt"
 	"image"
 	"image/color"
 	"log"
-	// "math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -21,8 +19,20 @@ type Game struct {
 }
 
 func (g *Game) Update() error {
-	for _, coords := range g.grid.coordinates {
-		g.img.Set(coords.x, coords.y, color.White)
+	for i, entity := range g.grid.entities {
+		if !shouldLive(&entity, i, g.grid) {
+			g.grid.entities[i].alive = 0
+		} else {
+			g.grid.entities[i].alive = 1
+		}
+	}
+
+	for _, entity := range g.grid.entities {
+		if entity.alive == 1 {
+			g.img.Set(entity.x, entity.y, color.White)
+		} else {
+			g.img.Set(entity.x, entity.y, color.Black)
+		}
 	}
 
 	return nil
@@ -37,8 +47,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 func main() {
+	// ebiten.SetMaxTPS(5)
 	grid := makeGrid(screenWidth, screenHeight)
-
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Game of Life")
 	g := &Game{

@@ -1,25 +1,28 @@
 package main
 
-import "fmt"
+import (
+	"math/rand"
+	"time"
+)
 
-type coordinate struct {
-	x int
-	y int
+type entity struct {
+	x     int
+	y     int
+	alive int
 }
 
 type Grid struct {
-	coordinates []coordinate
+	entities []entity
 }
 
 func makeGrid(columns int, rows int) *Grid {
 	g := &Grid{}
 	for i := 0; i < columns; i++ {
 		for j := 0; j < rows; j++ {
-			g.coordinates = append(g.coordinates, coordinate{x: i, y: j})
+			rand.Seed(time.Now().UnixNano())
+			g.entities = append(g.entities, entity{x: i, y: j, alive: rand.Intn(2)})
 		}
 	}
-	fmt.Println(columns * rows)
-	fmt.Println(len(g.coordinates))
 
 	return g
 }
