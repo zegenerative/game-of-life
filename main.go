@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
+	// "fmt"
 	"image"
+	"image/color"
 	"log"
-	"math/rand"
+	// "math/rand"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -15,17 +16,13 @@ const (
 )
 
 type Game struct {
-	img *image.RGBA
+	img  *image.RGBA
+	grid *Grid
 }
 
 func (g *Game) Update() error {
-	const pixels = screenWidth * screenHeight
-	for i := 0; i < pixels; i++ {
-		random := rand.Uint64()
-		g.img.Pix[4*i] = uint8(random)
-		g.img.Pix[4*i+1] = uint8(random)
-		g.img.Pix[4*i+2] = uint8(random)
-		g.img.Pix[4*i+3] = 0xff
+	for _, coords := range g.grid.coordinates {
+		g.img.Set(coords.x, coords.y, color.White)
 	}
 
 	return nil
@@ -41,11 +38,12 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 func main() {
 	grid := makeGrid(screenWidth, screenHeight)
-	fmt.Println(grid)
+
 	ebiten.SetWindowSize(screenWidth, screenHeight)
 	ebiten.SetWindowTitle("Game of Life")
 	g := &Game{
-		img: image.NewRGBA(image.Rect(0, 0, screenWidth, screenHeight)),
+		img:  image.NewRGBA(image.Rect(0, 0, screenWidth, screenHeight)),
+		grid: grid,
 	}
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
